@@ -37,7 +37,8 @@ Invasion players have a minimum 300 HP, mobs have 75% of their previous health,
 and mob damage has a 0.25-second grace interval. The full 134 target population,
 original MW2 terrain/weapons, native Mac controller path and Pro class remain.
 
-Validation: 16 simulation checks passed (six existing, ten temporary additions).
+Validation: 17 focused checks passed (six existing, ten ability/balance checks and
+one real action-slot decoding check).
 A CPU-only probe exercised every reward for 250 ticks against the actual Rust
 collision, including remote-camera clearance. A fresh resource preparation
 completed without a renderer. New temporary tests/probes are removed before

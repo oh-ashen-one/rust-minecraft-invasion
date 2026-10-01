@@ -2,6 +2,9 @@
 use super::*;
 use std::collections::VecDeque;
 
+/// Action slots are zero-based after input decoding; this is D-pad Right / key 4.
+pub const ACTIVATION_SLOT: u8 = 3;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Reward {
     Uav,

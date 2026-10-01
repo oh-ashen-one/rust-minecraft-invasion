@@ -1020,7 +1020,7 @@ pub fn sample_client_input(
     }
     // On a Minecraft map the hotbar picks the gun: MW2's weapon cycling and
     // action slots give way to the gun its selection asks for.
-    let hotbar = minecraft.as_ref().is_some_and(|ui| ui.active);
+    let hotbar = minecraft.as_ref().is_some_and(|ui| ui.active) && sim::voxel::terrain_active();
     if hotbar {
         // Switching weapon swaps between the first two hotbar slots; action
         // slots 3 and 4 (the D-pad's left and right) step along it.
@@ -1069,7 +1069,10 @@ pub fn sample_client_input(
     }
     if let Some(ps) = ps.filter(|_| !frozen) {
         for slot in slots {
-            if slot == 4 && sim::voxel::active() && !sim::voxel::terrain_active() {
+            if slot == usize::from(sim::invasion::streaks::ACTIVATION_SLOT)
+                && sim::voxel::active()
+                && !sim::voxel::terrain_active()
+            {
                 continue;
             }
             if !input_iw4::weapon_select::weapon_cycle_allowed(ps, clock.time(), select.time, 0, 0)

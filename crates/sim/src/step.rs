@@ -801,7 +801,10 @@ fn apply_actions(world: &mut FrameWorld, tick: Tick, actions: &[(ClientId, Clien
                 request_id: _,
                 slot,
             } => {
-                if slot == 4 && crate::voxel::active() && !crate::voxel::terrain_active() {
+                if slot == crate::invasion::streaks::ACTIVATION_SLOT
+                    && crate::voxel::active()
+                    && !crate::voxel::terrain_active()
+                {
                     if world.publishes_snapshot() {
                         crate::voxel::push_streak_action(id.0);
                     }
