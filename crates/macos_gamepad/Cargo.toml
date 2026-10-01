@@ -1,0 +1,13 @@
+[package]
+name = "macos_gamepad"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+description = "Apple GameController input translated into Bevy's standard gamepad events."
+
+[dependencies]
+bevy.workspace = true
+diag.workspace = true
+
+[lints]
+workspace = true

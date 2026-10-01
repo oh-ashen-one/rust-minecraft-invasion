@@ -1,0 +1,946 @@
+{
+  "minecraft_version": "26.3",
+  "copies_per_entry": 2,
+  "respawn_seconds": 3.0,
+  "custom_arena_ai": true,
+  "enemies": [
+    {
+      "name": "Zombie",
+      "id": "zombie",
+      "skin": "zombie/zombie",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombie"
+    },
+    {
+      "name": "BabyZombie",
+      "id": "zombie",
+      "skin": "zombie/zombie_baby",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 65,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombie"
+    },
+    {
+      "name": "Husk",
+      "id": "husk",
+      "skin": "zombie/husk",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 110,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "husk"
+    },
+    {
+      "name": "BabyHusk",
+      "id": "husk",
+      "skin": "zombie/husk_baby",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 65,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "husk"
+    },
+    {
+      "name": "Drowned",
+      "id": "drowned",
+      "skin": "zombie/drowned",
+      "family": "Humanoid",
+      "role": "ranged",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "drowned"
+    },
+    {
+      "name": "BabyDrowned",
+      "id": "drowned",
+      "skin": "zombie/drowned_baby",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 65,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "drowned"
+    },
+    {
+      "name": "ZombieVillager",
+      "id": "zombie_villager",
+      "skin": "zombie_villager/zombie_villager",
+      "family": "Illager",
+      "role": "melee",
+      "health": 110,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombie_villager"
+    },
+    {
+      "name": "BabyZombieVillager",
+      "id": "zombie_villager",
+      "skin": "zombie_villager/zombie_villager_baby",
+      "family": "Illager",
+      "role": "melee",
+      "health": 65,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombie_villager"
+    },
+    {
+      "name": "Skeleton",
+      "id": "skeleton",
+      "skin": "skeleton/skeleton",
+      "family": "Humanoid",
+      "role": "ranged",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "skeleton"
+    },
+    {
+      "name": "Stray",
+      "id": "stray",
+      "skin": "skeleton/stray",
+      "family": "Humanoid",
+      "role": "ranged",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "stray"
+    },
+    {
+      "name": "Bogged",
+      "id": "bogged",
+      "skin": "skeleton/bogged",
+      "family": "Humanoid",
+      "role": "ranged",
+      "health": 90,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "bogged"
+    },
+    {
+      "name": "Parched",
+      "id": "parched",
+      "skin": "skeleton/parched",
+      "family": "Humanoid",
+      "role": "ranged",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "parched"
+    },
+    {
+      "name": "WitherSkeleton",
+      "id": "wither_skeleton",
+      "skin": "skeleton/wither_skeleton",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 150,
+      "scale": 1.2,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "wither_skeleton"
+    },
+    {
+      "name": "Creeper",
+      "id": "creeper",
+      "skin": "creeper/creeper",
+      "family": "Creeper",
+      "role": "explosive",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "creeper"
+    },
+    {
+      "name": "ChargedCreeper",
+      "id": "creeper",
+      "skin": "creeper/creeper",
+      "family": "Creeper",
+      "role": "explosive",
+      "health": 150,
+      "scale": 1.2,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "creeper"
+    },
+    {
+      "name": "Spider",
+      "id": "spider",
+      "skin": "spider/spider",
+      "family": "Spider",
+      "role": "melee",
+      "health": 80,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "spider"
+    },
+    {
+      "name": "CaveSpider",
+      "id": "cave_spider",
+      "skin": "spider/cave_spider",
+      "family": "Spider",
+      "role": "melee",
+      "health": 70,
+      "scale": 0.7,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "spider"
+    },
+    {
+      "name": "Slime",
+      "id": "slime",
+      "skin": "slime/slime",
+      "family": "Slime",
+      "role": "melee",
+      "health": 65,
+      "scale": 2.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "slime"
+    },
+    {
+      "name": "MagmaCube",
+      "id": "magma_cube",
+      "skin": "slime/magmacube",
+      "family": "Slime",
+      "role": "melee",
+      "health": 95,
+      "scale": 2.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "magma_cube"
+    },
+    {
+      "name": "Enderman",
+      "id": "enderman",
+      "skin": "enderman/enderman",
+      "family": "TallHumanoid",
+      "role": "melee",
+      "health": 200,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "enderman"
+    },
+    {
+      "name": "Blaze",
+      "id": "blaze",
+      "skin": "blaze/blaze",
+      "family": "Blaze",
+      "role": "flying_ranged",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "blaze"
+    },
+    {
+      "name": "Breeze",
+      "id": "breeze",
+      "skin": "breeze/breeze",
+      "family": "Breeze",
+      "role": "flying_ranged",
+      "health": 150,
+      "scale": 1.0,
+      "texture": [
+        32,
+        32
+      ],
+      "sound": "breeze"
+    },
+    {
+      "name": "Ghast",
+      "id": "ghast",
+      "skin": "ghast/ghast",
+      "family": "Ghast",
+      "role": "flying_ranged",
+      "health": 160,
+      "scale": 1.0,
+      "texture": [
+        128,
+        64
+      ],
+      "sound": "ghast"
+    },
+    {
+      "name": "Phantom",
+      "id": "phantom",
+      "skin": "phantom/phantom",
+      "family": "Phantom",
+      "role": "flying_melee",
+      "health": 100,
+      "scale": 1.2,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "phantom"
+    },
+    {
+      "name": "Vex",
+      "id": "vex",
+      "skin": "illager/vex",
+      "family": "Vex",
+      "role": "flying_melee",
+      "health": 70,
+      "scale": 1.0,
+      "texture": [
+        32,
+        32
+      ],
+      "sound": "vex"
+    },
+    {
+      "name": "Witch",
+      "id": "witch",
+      "skin": "witch/witch",
+      "family": "Witch",
+      "role": "ranged",
+      "health": 130,
+      "scale": 1.0,
+      "texture": [
+        64,
+        128
+      ],
+      "sound": "witch"
+    },
+    {
+      "name": "Pillager",
+      "id": "pillager",
+      "skin": "illager/pillager",
+      "family": "Illager",
+      "role": "ranged",
+      "health": 120,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "pillager"
+    },
+    {
+      "name": "Vindicator",
+      "id": "vindicator",
+      "skin": "illager/vindicator",
+      "family": "Illager",
+      "role": "melee",
+      "health": 140,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "vindicator"
+    },
+    {
+      "name": "Evoker",
+      "id": "evoker",
+      "skin": "illager/evoker",
+      "family": "Illager",
+      "role": "ranged",
+      "health": 180,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "evoker"
+    },
+    {
+      "name": "Illusioner",
+      "id": "illusioner",
+      "skin": "illager/illusioner",
+      "family": "Illager",
+      "role": "ranged",
+      "health": 160,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "illusioner"
+    },
+    {
+      "name": "Ravager",
+      "id": "ravager",
+      "skin": "illager/ravager",
+      "family": "Ravager",
+      "role": "melee",
+      "health": 500,
+      "scale": 1.0,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "ravager"
+    },
+    {
+      "name": "Hoglin",
+      "id": "hoglin",
+      "skin": "hoglin/hoglin",
+      "family": "Hoglin",
+      "role": "melee",
+      "health": 200,
+      "scale": 1.0,
+      "texture": [
+        128,
+        64
+      ],
+      "sound": "hoglin"
+    },
+    {
+      "name": "BabyHoglin",
+      "id": "hoglin",
+      "skin": "hoglin/hoglin_baby",
+      "family": "Hoglin",
+      "role": "melee",
+      "health": 95,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "hoglin"
+    },
+    {
+      "name": "Zoglin",
+      "id": "zoglin",
+      "skin": "hoglin/zoglin",
+      "family": "Hoglin",
+      "role": "melee",
+      "health": 200,
+      "scale": 1.0,
+      "texture": [
+        128,
+        64
+      ],
+      "sound": "zoglin"
+    },
+    {
+      "name": "BabyZoglin",
+      "id": "zoglin",
+      "skin": "hoglin/zoglin_baby",
+      "family": "Hoglin",
+      "role": "melee",
+      "health": 95,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zoglin"
+    },
+    {
+      "name": "Piglin",
+      "id": "piglin",
+      "skin": "piglin/piglin",
+      "family": "Humanoid",
+      "role": "ranged",
+      "health": 110,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "piglin"
+    },
+    {
+      "name": "BabyPiglin",
+      "id": "piglin",
+      "skin": "piglin/piglin_baby",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 65,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "piglin"
+    },
+    {
+      "name": "PiglinBrute",
+      "id": "piglin_brute",
+      "skin": "piglin/piglin_brute",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 250,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "piglin_brute"
+    },
+    {
+      "name": "ZombifiedPiglin",
+      "id": "zombified_piglin",
+      "skin": "piglin/zombified_piglin",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 150,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombified_piglin"
+    },
+    {
+      "name": "BabyZombifiedPiglin",
+      "id": "zombified_piglin",
+      "skin": "piglin/zombified_piglin_baby",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 75,
+      "scale": 0.55,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombified_piglin"
+    },
+    {
+      "name": "Guardian",
+      "id": "guardian",
+      "skin": "guardian/guardian",
+      "family": "Guardian",
+      "role": "flying_ranged",
+      "health": 150,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "guardian"
+    },
+    {
+      "name": "ElderGuardian",
+      "id": "elder_guardian",
+      "skin": "guardian/guardian_elder",
+      "family": "Guardian",
+      "role": "flying_ranged",
+      "health": 400,
+      "scale": 2.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "elder_guardian"
+    },
+    {
+      "name": "Shulker",
+      "id": "shulker",
+      "skin": "shulker/shulker",
+      "family": "Shulker",
+      "role": "ranged",
+      "health": 150,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "shulker"
+    },
+    {
+      "name": "Silverfish",
+      "id": "silverfish",
+      "skin": "silverfish/silverfish",
+      "family": "Silverfish",
+      "role": "melee",
+      "health": 40,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "silverfish"
+    },
+    {
+      "name": "Endermite",
+      "id": "endermite",
+      "skin": "endermite/endermite",
+      "family": "Silverfish",
+      "role": "melee",
+      "health": 40,
+      "scale": 0.75,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "endermite"
+    },
+    {
+      "name": "Creaking",
+      "id": "creaking",
+      "skin": "creaking/creaking",
+      "family": "Creaking",
+      "role": "melee",
+      "health": 300,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "creaking"
+    },
+    {
+      "name": "Warden",
+      "id": "warden",
+      "skin": "warden/warden",
+      "family": "Warden",
+      "role": "ranged",
+      "health": 2500,
+      "scale": 1.0,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "warden"
+    },
+    {
+      "name": "Dragon",
+      "id": "ender_dragon",
+      "skin": "enderdragon/dragon",
+      "family": "Dragon",
+      "role": "flying_ranged",
+      "health": 2000,
+      "scale": 1.0,
+      "texture": [
+        256,
+        256
+      ],
+      "sound": "ender_dragon"
+    },
+    {
+      "name": "Wither",
+      "id": "wither",
+      "skin": "wither/wither",
+      "family": "Wither",
+      "role": "flying_ranged",
+      "health": 1800,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "wither"
+    },
+    {
+      "name": "Giant",
+      "id": "giant",
+      "skin": "zombie/zombie",
+      "family": "Humanoid",
+      "role": "melee",
+      "health": 600,
+      "scale": 4.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombie"
+    },
+    {
+      "name": "KillerBunny",
+      "id": "rabbit",
+      "skin": "rabbit/rabbit_caerbannog",
+      "family": "Rabbit",
+      "role": "melee",
+      "health": 80,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "rabbit"
+    },
+    {
+      "name": "Bee",
+      "id": "bee",
+      "skin": "bee/bee_angry",
+      "family": "Bee",
+      "role": "flying_melee",
+      "health": 50,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "bee"
+    },
+    {
+      "name": "Wolf",
+      "id": "wolf",
+      "skin": "wolf/wolf_angry",
+      "family": "Quadruped",
+      "role": "melee",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        32
+      ],
+      "sound": "wolf"
+    },
+    {
+      "name": "PolarBear",
+      "id": "polar_bear",
+      "skin": "bear/polarbear",
+      "family": "Quadruped",
+      "role": "melee",
+      "health": 200,
+      "scale": 1.6,
+      "texture": [
+        128,
+        64
+      ],
+      "sound": "polar_bear"
+    },
+    {
+      "name": "Panda",
+      "id": "panda",
+      "skin": "panda/panda_aggressive",
+      "family": "Quadruped",
+      "role": "melee",
+      "health": 160,
+      "scale": 1.6,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "panda"
+    },
+    {
+      "name": "Llama",
+      "id": "llama",
+      "skin": "llama/llama_brown",
+      "family": "Mount",
+      "role": "ranged",
+      "health": 130,
+      "scale": 1.0,
+      "texture": [
+        128,
+        64
+      ],
+      "sound": "llama"
+    },
+    {
+      "name": "TraderLlama",
+      "id": "trader_llama",
+      "skin": "llama/llama_creamy",
+      "family": "Mount",
+      "role": "ranged",
+      "health": 130,
+      "scale": 1.0,
+      "texture": [
+        128,
+        64
+      ],
+      "sound": "llama"
+    },
+    {
+      "name": "Goat",
+      "id": "goat",
+      "skin": "goat/goat",
+      "family": "Quadruped",
+      "role": "melee",
+      "health": 100,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "goat"
+    },
+    {
+      "name": "IronGolem",
+      "id": "iron_golem",
+      "skin": "iron_golem/iron_golem",
+      "family": "Warden",
+      "role": "melee",
+      "health": 500,
+      "scale": 1.05,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "iron_golem"
+    },
+    {
+      "name": "SnowGolem",
+      "id": "snow_golem",
+      "skin": "snow_golem/snow_golem",
+      "family": "SnowGolem",
+      "role": "ranged",
+      "health": 50,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "snow_golem"
+    },
+    {
+      "name": "Dolphin",
+      "id": "dolphin",
+      "skin": "dolphin/dolphin",
+      "family": "Dolphin",
+      "role": "flying_melee",
+      "health": 75,
+      "scale": 1.0,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "dolphin"
+    },
+    {
+      "name": "Pufferfish",
+      "id": "pufferfish",
+      "skin": "fish/pufferfish",
+      "family": "Guardian",
+      "role": "melee",
+      "health": 35,
+      "scale": 0.7,
+      "texture": [
+        32,
+        32
+      ],
+      "sound": "puffer_fish"
+    },
+    {
+      "name": "CamelHusk",
+      "id": "camel_husk",
+      "skin": "camel/camel_husk",
+      "family": "Mount",
+      "role": "melee",
+      "health": 180,
+      "scale": 1.4,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "camel_husk"
+    },
+    {
+      "name": "ZombieNautilus",
+      "id": "zombie_nautilus",
+      "skin": "nautilus/zombie_nautilus",
+      "family": "Nautilus",
+      "role": "flying_melee",
+      "health": 130,
+      "scale": 1.0,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "zombie_nautilus"
+    },
+    {
+      "name": "CoralZombieNautilus",
+      "id": "zombie_nautilus",
+      "skin": "nautilus/zombie_nautilus_coral",
+      "family": "Nautilus",
+      "role": "flying_melee",
+      "health": 140,
+      "scale": 1.0,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "zombie_nautilus"
+    },
+    {
+      "name": "ZombieHorse",
+      "id": "zombie_horse",
+      "skin": "horse/horse_zombie",
+      "family": "Mount",
+      "role": "melee",
+      "health": 150,
+      "scale": 1.3,
+      "texture": [
+        64,
+        64
+      ],
+      "sound": "zombie_horse"
+    },
+    {
+      "name": "SulfurCube",
+      "id": "sulfur_cube",
+      "skin": "sulfur_cube/sulfur_cube_outer",
+      "family": "Slime",
+      "role": "explosive",
+      "health": 100,
+      "scale": 2.0,
+      "texture": [
+        128,
+        128
+      ],
+      "sound": "sulfur_cube"
+    }
+  ]
+}
