@@ -2,7 +2,7 @@
 
 A local survival crossover: **Modern Warfare 2’s Rust map and weapons against a crowd of Minecraft mobs**, including Ender Dragons, Withers and Wardens.
 
-**[Download the Apple silicon Mac build](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases/latest)** · [Release downloads](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases) · [Source build](#build-from-source)
+**[Download the Apple silicon Mac build](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases/tag/v0.8.0)** · [Release downloads](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases) · [Source build](#build-from-source)
 
 This is an experimental single-player mode built on [2010 Rust Rewrite Mashup](https://github.com/chasmlol/2010-rust-rewrite-mashup), which builds on [IW4L](https://github.com/vladtrc/iw4L). It is a standalone native runtime that reads assets from a game installation you own. Call of Duty, Minecraft and other original game assets are **not bundled**.
 
