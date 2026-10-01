@@ -32,6 +32,24 @@ def main():
         licenses=resources/'Licenses';licenses.mkdir()
         for source,name in [('LICENSE','Apache-2.0.txt'),('NOTICE','NOTICE.txt'),('crates/ui/assets/OFL-Oxanium.txt','OFL-Oxanium.txt'),('crates/console/assets/COPYING-FreeFont.txt','COPYING-FreeFont.txt')]:
             shutil.copyfile(ROOT/source,licenses/name)
+        metadata=json.loads(subprocess.check_output(['cargo','metadata','--locked','--offline','--filter-platform','aarch64-apple-darwin','--format-version','1'],cwd=ROOT,text=True))
+        notices=[]
+        for package in sorted(metadata['packages'],key=lambda p:(p['name'],p['version'])):
+            if package.get('source') is None: continue
+            directory=Path(package['manifest_path']).parent
+            texts=[]
+            for candidate in sorted(directory.iterdir()):
+                if candidate.is_file() and candidate.name.upper().startswith(('LICENSE','LICENCE','COPYING','COPYRIGHT','NOTICE')):
+                    try: texts.append(candidate.read_text())
+                    except (UnicodeError,OSError): pass
+            if package.get('license_file'):
+                candidate=directory/package['license_file']
+                if candidate.is_file():
+                    value=candidate.read_text()
+                    if value not in texts: texts.append(value)
+            heading=package['name']+' '+package['version']+' — '+(package.get('license') or 'see package license')
+            notices.append(heading+'\n'+(package.get('repository') or '')+'\n\n'+'\n\n'.join(texts))
+        (licenses/'Rust-dependency-notices.txt').write_text('Bundled Rust dependency license notices\n\n'+'\n\n'+'\n\n'.join(notices))
         commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
         (resources/'build.json').write_text(json.dumps({'version':VERSION,'source_commit':commit,'binary_sha256':hashlib.sha256((resources/'iw4l').read_bytes()).hexdigest(),'platform':'macOS Apple silicon'},indent=2)+'\n')
         with (app/'Contents/Info.plist').open('wb') as f:
