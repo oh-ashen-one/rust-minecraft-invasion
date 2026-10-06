@@ -1,6 +1,6 @@
 use crate::frame::FrameWorld;
 use crate::script::runtime::{raise, run_now};
-use crate::script::{Arc, BTreeMap, Fault, Location, Runtime, Value, VecDeque};
+use crate::script::{Arc, BTreeMap, Fault, Location, Runtime, Value};
 use crate::world::ClientId;
 use bevy_ecs::prelude::World;
 
@@ -208,6 +208,7 @@ const CLASS_MENU: &str = "changeclass";
 
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) struct MenuAnswer {
+    wait_for_menu: bool,
     menu: Arc<str>,
     response: Arc<str>,
     data: Vec<(String, Value)>,
@@ -224,6 +225,32 @@ pub(crate) fn answer_menu(world: &mut World, client: u32, menu: &str, response: 
         world,
         client,
         MenuAnswer {
+            wait_for_menu: true,
+            menu: menu.into(),
+            response: response.into(),
+            data: Vec::new(),
+        },
+    );
+}
+
+/// A real client response must reach the script even for a client-opened popup.
+/// Only engine-generated join/class answers wait for a server menu to open.
+pub(crate) fn answer_client_menu(world: &mut World, client: u32, menu: &str, response: &str) {
+    if let Some(kind) = menu_kind(menu) {
+        if let Some(queue) = world
+            .resource_mut::<Runtime>()
+            .menu_answers
+            .get_mut(&client)
+        {
+            // An explicit choice supersedes an automatic choice for the same menu.
+            queue.retain(|answer| !answer.wait_for_menu || menu_kind(&answer.menu) != Some(kind));
+        }
+    }
+    push_answer(
+        world,
+        client,
+        MenuAnswer {
+            wait_for_menu: false,
             menu: menu.into(),
             response: response.into(),
             data: Vec::new(),
@@ -237,8 +264,8 @@ pub(crate) fn answer_join(world: &mut World, client: u32) {
     }
 }
 
-pub(crate) fn note_team_answer(world: &mut World, client: u32, menu: &str) {
-    if menu == TEAM_MENU {
+pub(crate) fn note_team_answer(world: &mut World, client: u32, menu: &str, response: &str) {
+    if menu == TEAM_MENU && response != "back" {
         world.resource_mut::<Runtime>().joined.insert(client);
     }
 }
@@ -421,6 +448,7 @@ pub(crate) fn choose_class(world: &mut World, client: u32, class: &crate::ClassD
         world,
         client,
         MenuAnswer {
+            wait_for_menu: true,
             menu: CLASS_MENU.into(),
             response: format!("custom{}", index + 1).into(),
             data,
@@ -439,53 +467,66 @@ fn menu_kind(menu: &str) -> Option<bool> {
 }
 
 fn deliver_answers(world: &mut World, client: u32) {
-    // Answers queued ahead of the open menu's kind were for a menu the scripts skipped.
     let runtime = world.resource::<Runtime>();
-    let Some(slot) = runtime.players.get(&client) else {
+    let Some(slot) = runtime.players.get(&client).filter(|slot| slot.begun) else {
         return;
     };
-    if !slot.begun {
+    let Some(queue) = runtime.menu_answers.get(&client) else {
         return;
-    }
-    let skipped = slot
-        .menu
-        .as_deref()
-        .and_then(menu_kind)
-        .and_then(|open| {
-            runtime
-                .menu_answers
-                .get(&client)?
-                .iter()
-                .position(|answer| menu_kind(&answer.menu) == Some(open))
-        })
-        .unwrap_or(0);
-    if skipped > 0 {
-        let mut runtime = world.resource_mut::<Runtime>();
-        if let Some(queue) = runtime.menu_answers.get_mut(&client) {
-            queue.drain(..skipped);
+    };
+    let explicit = queue.iter().position(|answer| !answer.wait_for_menu);
+    let position = if let Some(position) = explicit {
+        position
+    } else {
+        // Engine-generated answers can precede connection/menu setup. Retain
+        // that barrier and skip only automatic answers for a skipped menu kind.
+        let position = slot
+            .menu
+            .as_deref()
+            .and_then(menu_kind)
+            .and_then(|kind| {
+                queue
+                    .iter()
+                    .position(|answer| menu_kind(&answer.menu) == Some(kind))
+            })
+            .unwrap_or(0);
+        let Some(next) = queue.get(position) else {
+            return;
+        };
+        if let (Some(open), Some(answer)) = (
+            slot.menu.as_deref().and_then(menu_kind),
+            menu_kind(&next.menu),
+        ) {
+            if open != answer {
+                return;
+            }
         }
-    }
-    let runtime = world.resource::<Runtime>();
-    let Some(slot) = runtime.players.get(&client) else {
-        return;
+        let in_game = matches!(&*slot.sessionstate, "playing" | "dead");
+        if slot.menu.is_none() && !(in_game && &*next.menu == CLASS_MENU) {
+            return;
+        }
+        position
     };
-    let Some(next) = runtime.menu_answers.get(&client).and_then(|q| q.front()) else {
-        return;
-    };
-    let in_game = matches!(&*slot.sessionstate, "playing" | "dead");
-    if slot.menu.is_none() && !(in_game && &*next.menu == CLASS_MENU) {
-        return;
-    }
     let object = slot.object;
     let mut runtime = world.resource_mut::<Runtime>();
-    let answer = runtime
+    let queue = runtime
         .menu_answers
         .get_mut(&client)
-        .and_then(VecDeque::pop_front)
         .expect("checked above");
-    let slot = runtime.players.get_mut(&client).expect("checked above");
-    slot.menu = None;
-    slot.data.extend(answer.data);
+    if explicit.is_none() {
+        queue.drain(..position);
+    }
+    let answer = queue
+        .remove(if explicit.is_some() { position } else { 0 })
+        .expect("checked above");
+    // Receiving an answer does not close a menu. Only the script's explicit
+    // open/close operations own that state; a rejected answer can be retried.
+    runtime
+        .players
+        .get_mut(&client)
+        .expect("checked above")
+        .data
+        .extend(answer.data);
     raise(
         world,
         Value::Object(object),

@@ -1,3 +1,22 @@
+# v0.8.1 menu regression checks
+
+The owner encounter log showed `team_marinesopfor back` followed by repeated
+`autoassign`, `axis`, `allies` and `popup_endgame endround` responses, with no
+successful join/spawn. Two temporary tests reproduced the bridge failures.
+After the fix, six checks passed: Back then Auto-Assign, End Round while a
+spectator, client responses waiting for player begin, automatic answers waiting
+for the correct menu, End Round bypassing a blocked automatic join, and explicit
+Back cancelling an automatic team choice without marking joined.
+
+Four isolated, non-GUI launcher checks verified persistent shared-directory
+selection through an exclusive-lock refusal, PAUSED handling, conflicting roots,
+and missing-root refusal. They used temporary fixture files and did not acquire
+any live renderer slot. Native launcher syntax and the full native build passed.
+New temporary tests are removed before push under the repository test policy.
+No live-game replay or subjective acceptance is claimed. The game is left closed.
+
+---
+
 # v0.8.0 validation
 
 Verified on an Apple silicon Mac Studio. The checks below do not launch a renderer or inject gameplay input.

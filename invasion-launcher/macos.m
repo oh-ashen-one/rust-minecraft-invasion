@@ -5,12 +5,13 @@
 #include <signal.h>
 #include <unistd.h>
 
-static NSString *Version = @"0.8.0";
+static NSString *Version = @"0.8.1";
+static NSString *RuntimeVersion = @"0.8.0";
 static NSURL *RuntimeRoot(void) {
     NSString *custom=NSProcessInfo.processInfo.environment[@"IW4L_INVASION_HOME"];
     if(custom.length) return [NSURL fileURLWithPath:custom isDirectory:YES];
     NSURL *support=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
-    return [[support URLByAppendingPathComponent:@"Rust Minecraft Invasion" isDirectory:YES] URLByAppendingPathComponent:Version isDirectory:YES];
+    return [[support URLByAppendingPathComponent:@"Rust Minecraft Invasion" isDirectory:YES] URLByAppendingPathComponent:RuntimeVersion isDirectory:YES];
 }
 static NSURL *GameBinary(void) {return [NSBundle.mainBundle.resourceURL URLByAppendingPathComponent:@"iw4l"];}
 static BOOL Exists(NSString *path) {return [NSFileManager.defaultManager fileExistsAtPath:path];}
@@ -77,7 +78,7 @@ static NSString *RunReadOnly(NSString *exe, NSArray *args, int *status) {
         if(result!=NSModalResponseOK)return;
         NSString *path=panel.URL.path;
         if(!ValidMW2(path)){self.status.stringValue=@"That folder is missing the English MW2 multiplayer data. Select the game’s installation folder, with main and zone/english inside.";return;}
-        self.games=path;[@{@"MW2Folder":path} writeToURL:self.configURL atomically:YES];self.folder.stringValue=path;[self refresh];
+        self.games=path;NSMutableDictionary *config=[[NSDictionary dictionaryWithContentsOfURL:self.configURL] mutableCopy] ?: [NSMutableDictionary new];config[@"MW2Folder"]=path;[config writeToURL:self.configURL atomically:YES];self.folder.stringValue=path;[self refresh];
     }];
 }
 - (void)releaseLocks {
@@ -88,7 +89,16 @@ static NSString *RunReadOnly(NSString *exe, NSArray *args, int *status) {
 - (NSString *)claimRenderer {
     struct stat console;if(stat("/dev/console",&console)!=0 || console.st_uid==0)return @"Log into the Mac desktop before opening the game.";
     NSDictionary *env=NSProcessInfo.processInfo.environment;
-    NSString *base=env[@"GPU_SLOT_DIR"] ?: env[@"GPU_LOCK_DIR"] ?: [NSHomeDirectory() stringByAppendingPathComponent:@".cache/gpu-slot"];
+    NSDictionary *config=[NSDictionary dictionaryWithContentsOfURL:self.configURL];
+    id configuredValue=config[@"RendererSlotDirectory"];
+    if(configuredValue && (![configuredValue isKindOfClass:NSString.class] || ![configuredValue length]))return @"The configured renderer directory is invalid.";
+    NSString *configured=configuredValue;
+    NSString *explicitRoot=[env[@"GPU_SLOT_DIR"] length] ? env[@"GPU_SLOT_DIR"] : ([env[@"GPU_LOCK_DIR"] length] ? env[@"GPU_LOCK_DIR"] : nil);
+    NSString *(^canonical)(NSString *)=^NSString *(NSString *path){return [[path stringByExpandingTildeInPath] stringByResolvingSymlinksInPath];};
+    if(configured.length && explicitRoot.length && ![canonical(configured) isEqualToString:canonical(explicitRoot)])return @"Renderer directory settings disagree. Resolve the configuration before launching.";
+    NSString *base=canonical(configured.length ? configured : (explicitRoot ?: [NSHomeDirectory() stringByAppendingPathComponent:@".cache/gpu-slot"]));
+    if(!base.isAbsolutePath)return @"The renderer directory must be an absolute path.";
+    if((configured.length || explicitRoot.length) && !Exists([base stringByAppendingPathComponent:@"locks/perf.lock"]))return @"The configured shared renderer protocol is missing. No fallback directory was created.";
     if(Exists([base stringByAppendingPathComponent:@"PAUSED"])||Exists([NSHomeDirectory() stringByAppendingPathComponent:@"ralph-slots/PAUSED"]))return @"Renderer launches are paused on this Mac. Leave that pause in place.";
     NSString *locks=[base stringByAppendingPathComponent:@"locks"];
     [NSFileManager.defaultManager createDirectoryAtPath:locks withIntermediateDirectories:YES attributes:nil error:nil];
@@ -100,11 +110,13 @@ static NSString *RunReadOnly(NSString *exe, NSArray *args, int *status) {
     }
     if(self.captureFD<0){[self releaseLocks];return @"Both shared renderer slots are busy. Try again after another game/editor closes.";}
     int code;NSString *output=RunReadOnly(@"/bin/ps",@[@"-axo",@"stat=,comm="],&code);int count=0;
-    NSSet *engines=[NSSet setWithArray:@[@"iw4l",@"UnrealEditor",@"Unity",@"Godot",@"Blender",@"RobloxStudio",@"RobloxPlayer"]];
+    NSSet *engines=[NSSet setWithArray:@[@"iw4l",@"unrealeditor",@"unrealgame",@"unity",@"godot",@"blender",@"robloxstudio",@"robloxplayer",@"gta5.exe",@"gta5_enhanced.exe",@"eldenring.exe",@"darksoulsremastered.exe",@"iw4mp.exe"]];
     for(NSString *row in [output componentsSeparatedByString:@"\n"]){
         NSString *trim=[row stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];NSRange space=[trim rangeOfCharacterFromSet:NSCharacterSet.whitespaceCharacterSet];if(space.location==NSNotFound)continue;
         NSString *state=[trim substringToIndex:space.location];NSString *path=[[trim substringFromIndex:space.location] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-        if([engines containsObject:path.lastPathComponent]){count++;if([state hasPrefix:@"E"]||[state hasPrefix:@"Z"]){[self releaseLocks];return @"A game/editor is still exiting. Wait for it to finish.";}}
+        NSString *name=path.lastPathComponent.lowercaseString;
+        if([name isEqualToString:@"gta5.exe"]||[name isEqualToString:@"gta5_enhanced.exe"]){[self releaseLocks];return @"GTA requires exclusive GPU use on this setup. Close it yourself before opening Rust.";}
+        if([engines containsObject:name]){count++;if([state containsString:@"E"]||[state containsString:@"Z"]){[self releaseLocks];return @"A game/editor is still exiting. Wait for it to finish.";}}
     }
     if(code!=0||count>=2){[self releaseLocks];return @"Two renderer-bearing games/editors are already open. Close one yourself before starting another.";}
     return nil;

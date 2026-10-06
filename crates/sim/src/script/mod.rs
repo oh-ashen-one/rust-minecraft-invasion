@@ -30,7 +30,7 @@ pub(crate) use host::mechanics::advance_mechanics;
 pub use host::natives::engine::{EXIT_LEVEL, MAP_RESTART};
 pub(crate) use host::natives::iw4::set_dvar;
 pub(crate) use host::players::{
-    answer_join, answer_menu, apply_disconnects, choose_class, choose_default_class,
+    answer_client_menu, answer_join, apply_disconnects, choose_class, choose_default_class,
     disconnect_player, flashbang, force_death, give_killstreak, is_t5, note_team_answer,
     player_damage, script_seats, sync_players,
 };

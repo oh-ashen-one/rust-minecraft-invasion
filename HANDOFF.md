@@ -1,3 +1,40 @@
+# Menu recovery patch — v0.8.1
+
+Branch: `codex/fix-invasion-menu-responses`, based on public v0.8.0 `97bed1e`.
+Owner reported getting trapped at Auto-Assign on Rust and being unable to end
+the match on October 6. The log recorded Back as the first team-menu response,
+then repeated team and End Round choices without a join/spawn.
+
+Confirmed cause: the menu-answer bridge cleared server menu state on receipt
+of any answer. A rejected/cancelled Back answer therefore blocked subsequent
+team choices. Client-opened End Round popups were also gated on a server-open
+menu record that did not exist. Real client responses now reach GSC after the
+player begins, while automatic join/class answers retain their readiness gate.
+Scripts own menu closure. Explicit choices supersede queued automatic choices
+for the same menu, and Back does not mark the player joined.
+
+Validation: two targeted tests reproduced the old failure, then six menu
+regression checks passed. Four isolated launcher fixtures passed for persistent
+lock-root selection, exclusive-lock refusal, PAUSED, conflicting configuration
+and missing-root refusal (the root-selection case is the exclusive-lock test).
+Only temporary fixtures were used, and they were removed under repository
+policy. No game window, match or input was used for this repair's tests.
+
+The launcher reads optional `RendererSlotDirectory` from the machine-local
+`settings.plist`, preserves it when the MW2 folder changes, refuses conflicting
+or missing configured roots, recognizes additional game renderers and blocks
+when GTA is active. Never change shared PAUSED/slot files or other processes.
+
+App version is 0.8.1; runtime data stays in the existing `0.8.0` Application
+Support folder so settings, controls, classes and downloaded assets survive.
+Install only with this app/game closed and retain a recoverable old-app backup.
+Do not automatically relaunch: the owner will choose when to test the repair.
+The public v0.8.0 release/tag remains unchanged; this patch is on its task branch.
+
+---
+
+## Previous release handoff
+
 # Public survival release handoff
 
 Current release: experimental **v0.8.0**, branch `release/0.8.0`.

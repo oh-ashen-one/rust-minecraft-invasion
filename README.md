@@ -1,5 +1,7 @@
 # Rust Minecraft Invasion
 
+This task branch contains the **0.8.1 menu-recovery patch**: team choices remain responsive after Back, and client-opened End Round popups reach the game script. The public release linked below is still 0.8.0. The patch preserves the existing 0.8.0 runtime/profile directory.
+
 A local survival crossover: **Modern Warfare 2’s Rust map and weapons against a crowd of Minecraft mobs**, including Ender Dragons, Withers and Wardens.
 
 **[Download the Apple silicon Mac build](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases/tag/v0.8.0)** · [Release downloads](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases) · [Source build](#build-from-source)
@@ -104,3 +106,5 @@ The launcher holds shared renderer locks, allows at most two renderer-bearing en
 - **oh-ashen-one** — Rust invasion roster/abilities, survival reward ladder, native Mac input/launch packaging and this public fork.
 
 Code is under **Apache-2.0**, with bundled third-party notices retained; see [LICENSE](LICENSE), [NOTICE](NOTICE), and the [upstream README](docs/UPSTREAM-README.md). Font licenses are shipped with the app. All game trademarks and original content belong to their owners. This project is unofficial and unaffiliated with Activision, Mojang or Microsoft.
+
+For a workstation using a non-default shared renderer coordinator, set `RendererSlotDirectory` in the runtime's local `settings.plist` to that coordinator's existing absolute directory. The launcher refuses conflicting environment overrides or a missing configured protocol. Keep machine-specific paths out of the repository and do not change shared pause/lock files.

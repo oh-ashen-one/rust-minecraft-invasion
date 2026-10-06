@@ -782,9 +782,9 @@ fn apply_actions(world: &mut FrameWorld, tick: Tick, actions: &[(ClientId, Clien
             } => {
                 let menu = crate::menu_response_text(&menu);
                 let response = crate::menu_response_text(&response);
-                crate::script::note_team_answer(world.ecs(), id.0, menu);
+                crate::script::note_team_answer(world.ecs(), id.0, menu, response);
                 if !answer_custom_class(world, *id, menu, response) {
-                    crate::script::answer_menu(world.ecs(), id.0, menu, response);
+                    crate::script::answer_client_menu(world.ecs(), id.0, menu, response);
                 }
             }
             ClientAction::LeaveMatch { request_id: _ } => {
