@@ -4,6 +4,10 @@ The owner confirmed the v0.8.1 base works and looks good. That acceptance
 predates this change. No live game input or rendered match was used here.
 
 - Full Apple-silicon `play` build of the launcher/runtime passed.
+- The v0.9.0 app passed ad-hoc code-signature, bundle and CLI loader checks;
+  its installed binary hash matches build metadata for code commit 52a6f32.
+  A separate candidate app and portable ZIP were saved. The accepted v0.8.1
+  binary remains unchanged. No renderer was launched.
 - The runtime's real asset loader read the owned MW2 Rust/common/patch data.
   The complete game-script graph plus the invasion HUD/target adaptations
   compiled against the native host catalog.

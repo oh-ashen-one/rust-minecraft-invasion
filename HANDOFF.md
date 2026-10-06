@@ -22,6 +22,12 @@ and Counter-UAV no longer apply invented creature debuffs.
 
 Full build and original-script-graph compilation passed, and all fifteen costs,
 weapon refs and icon refs matched the local table. See VALIDATION.md for bounds.
+The code candidate at 52a6f32 was packaged, ad-hoc signed, bundle/CLI checked
+and installed separately as `Rust Minecraft Invasion Native Killstreaks 0.9.app`.
+A portable ZIP was saved to Downloads (SHA256
+`b1f8eafac8b7ff98644abbff8a7d50e39d1ab8d803b054c3d7c11e2090eb56ca`).
+The accepted v0.8.1 binary still matches its recorded build hash. No candidate
+renderer or match was launched.
 Live visuals, activation sequences, remote control and sound await the owner.
 Probes/extracts stay out of publication. Do not merge this branch or replace the
 accepted app based only on these offline checks.
