@@ -145,8 +145,6 @@ impl Arena {
         let mut attacks = Vec::new();
         let mut blasts = Vec::new();
         let target = player + Vec3::Z * 35.0;
-        let emp = self.clock < self.streaks.emp_until;
-        let jam = self.clock < self.streaks.jam_until;
         for mob in &mut self.mobs {
             if mob.health <= 0.0 {
                 continue;
@@ -266,7 +264,7 @@ impl Arena {
                 continue;
             }
 
-            if mob.kind.ranged() && !emp && distance < (if jam { 650.0 } else { 1300.0 }) && sees {
+            if mob.kind.ranged() && distance < 1300.0 && sees {
                 if mob.cooldown <= 0.0 && mob.windup == 0.0 {
                     mob.windup = if mob.kind == Kind::Ghast { 0.8 } else { 0.35 };
                     if matches!(mob.kind, Kind::Ghast | Kind::Blaze) {
@@ -285,16 +283,6 @@ impl Arena {
                 if mob.windup > 0.0 {
                     mob.windup -= dt;
                     if mob.windup <= 0.0 {
-                        let target = if jam {
-                            target
-                                + Vec3::new(
-                                    (mob.age * 2.0).sin() * 150.0,
-                                    (mob.age * 3.0).cos() * 150.0,
-                                    75.0,
-                                )
-                        } else {
-                            target
-                        };
                         shoot(mob, target, &mut self.projectiles, &mut self.sounds);
                         mob.windup = 0.0;
                         mob.cooldown = match mob.kind {

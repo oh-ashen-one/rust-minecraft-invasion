@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.8.1'
+VERSION = '0.9.0'
 
 def run(*args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
@@ -53,7 +53,7 @@ def main():
         commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
         (resources/'build.json').write_text(json.dumps({'version':VERSION,'source_commit':commit,'binary_sha256':hashlib.sha256((resources/'iw4l').read_bytes()).hexdigest(),'platform':'macOS Apple silicon'},indent=2)+'\n')
         with (app/'Contents/Info.plist').open('wb') as f:
-            plistlib.dump({'CFBundleExecutable':'launch','CFBundleIdentifier':'org.rustinvasion.survival','CFBundleName':'Rust Minecraft Invasion','CFBundleDisplayName':'Rust Minecraft Invasion','CFBundlePackageType':'APPL','CFBundleVersion':'9','CFBundleShortVersionString':VERSION,'LSMinimumSystemVersion':'14.0','NSHighResolutionCapable':True,'NSDocumentsFolderUsageDescription':'Read the MW2 installation folder that you select.'},f)
+            plistlib.dump({'CFBundleExecutable':'launch','CFBundleIdentifier':'org.rustinvasion.survival','CFBundleName':'Rust Minecraft Invasion','CFBundleDisplayName':'Rust Minecraft Invasion','CFBundlePackageType':'APPL','CFBundleVersion':'10','CFBundleShortVersionString':VERSION,'LSMinimumSystemVersion':'14.0','NSHighResolutionCapable':True,'NSDocumentsFolderUsageDescription':'Read the MW2 installation folder that you select.'},f)
         run('xcrun','clang','-mmacosx-version-min=14.0','-fobjc-arc','-framework','Cocoa',str(ROOT/'invasion-launcher/macos.m'),'-o',str(macos/'launch'))
         run('codesign','--force','--sign','-','--identifier','org.rustinvasion.survival',str(app))
         run('codesign','--verify','--strict',str(app))

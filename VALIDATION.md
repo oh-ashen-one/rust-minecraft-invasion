@@ -1,3 +1,31 @@
+# v0.9.0 native killstreak candidate
+
+The owner confirmed the v0.8.1 base works and looks good. That acceptance
+predates this change. No live game input or rendered match was used here.
+
+- Full Apple-silicon `play` build of the launcher/runtime passed.
+- The runtime's real asset loader read the owned MW2 Rust/common/patch data.
+  The complete game-script graph plus the invasion HUD/target adaptations
+  compiled against the native host catalog.
+- All fifteen ladder entries matched the stock table's costs and had a stock
+  item weapon and reward icon. The ladder awarded each reward once through 25
+  kills, added no duplicates through 50, retained pending rewards on life reset,
+  and earned a new UAV after three kills in the next life.
+- Native action-slot input now reaches the original scripts. The cube support
+  renderer, custom remote cameras and fake reward activation path are removed.
+- Temporary inspection examples and original-data extracts are not published.
+- `publish-check` still reports 601 inherited findings: 101 address/decompiler
+  shapes and 500 test-placement findings. Every reported source line exists in
+  the base commit; this change adds none. The checker was not weakened.
+
+These are build and offline checks. Original helicopter flight/appearance,
+care-package delivery/collection, remote weapons, earned notifications,
+bottom-left icon spacing, sound and all reward activation sequences still need
+player validation in the candidate. The standalone runtime's native host APIs
+remain experimental; source/script compilation does not prove full retail parity.
+
+---
+
 # v0.8.1 menu regression checks
 
 The owner encounter log showed `team_marinesopfor back` followed by repeated

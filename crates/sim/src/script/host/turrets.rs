@@ -488,6 +488,26 @@ fn acquire(world: &mut World, object: u64, turret: &Turret, from: [f32; 3]) -> O
         }
         best = Some((distance, player, at));
     }
+    let mobs: Vec<_> = world
+        .resource::<Runtime>()
+        .invasion_targets
+        .values()
+        .copied()
+        .collect();
+    for target in mobs {
+        let at = Vec3::from_array(field_vector(world, target, "origin")) + Vec3::Z * TARGET_HEIGHT;
+        let delta = at - Vec3::from_array(from);
+        let distance = delta.length();
+        if distance > range || best.is_some_and(|(d, ..)| d <= distance) {
+            continue;
+        }
+        let Some(dir) = delta.try_normalize() else {
+            continue;
+        };
+        if within_arcs(turret, base, dir) && visible(world, from, at, ignore, target) {
+            best = Some((distance, target, at));
+        }
+    }
     best.map(|(_, player, at)| (player, at))
 }
 
@@ -584,13 +604,23 @@ pub(crate) fn fire_bullet(
     let range = weapon_range(world, weapon);
     let end = (Vec3::from_array(from) + Vec3::from_array(dir) * range).to_array();
     let ignore = ignore_self(world, object);
-    let TraceOutcome::Hit { collider, .. } = entity_trace(world, from, end, MASK_SHOT, ignore)
-    else {
-        return;
-    };
+    let trace = entity_trace(world, from, end, MASK_SHOT, ignore);
     let amount = FrameWorld::from_world(world)
         .combat_facts_for(weapon)
         .map_or(0, |f| f.damage);
+    let stop = match trace {
+        TraceOutcome::Miss { end } | TraceOutcome::Hit { end, .. } => Some(end),
+        _ => None,
+    };
+    if let Some(stop) = stop {
+        if let Some((key, _, _)) = crate::voxel::mob_on_segment(from, stop) {
+            crate::voxel::push_mob_shot(key, amount as f32, from);
+            return;
+        }
+    }
+    let TraceOutcome::Hit { collider, .. } = trace else {
+        return;
+    };
     let hit = match collider {
         ColliderId::Player { .. } | ColliderId::World { .. } => None,
         _ => match collider_entity(world, collider) {

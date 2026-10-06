@@ -133,7 +133,7 @@ impl Mining {
                         }
                     }
                 }
-                sim::voxel::VoxelEvent::MobShot { .. } | sim::voxel::VoxelEvent::StreakAction { .. } => {}
+                sim::voxel::VoxelEvent::MobShot { .. } | sim::voxel::VoxelEvent::InvasionBlast { .. } => {}
             }
         }
         // No crack outlives its block, however it went.

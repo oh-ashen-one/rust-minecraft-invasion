@@ -705,7 +705,7 @@ pub(crate) fn update(
                     let pitch = (1.0 + (sounds.random() - sounds.random()) * 0.2) * 0.7;
                     sounds.play(&world.packs, "minecraft:entity.generic.explode", Some(at(center)), 4.0, pitch);
                 }
-                sim::voxel::VoxelEvent::MobShot { .. } | sim::voxel::VoxelEvent::Ray { .. } | sim::voxel::VoxelEvent::StreakAction { .. } => {}
+                sim::voxel::VoxelEvent::MobShot { .. } | sim::voxel::VoxelEvent::Ray { .. } | sim::voxel::VoxelEvent::InvasionBlast { .. } => {}
             }
         }
     }

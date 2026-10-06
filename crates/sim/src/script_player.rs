@@ -753,9 +753,6 @@ pub(crate) fn constrain_cmd(
         controls.switch_to = 0;
         world.client_meta_mut(id).controls.switch_to = 0;
     }
-    if crate::voxel::invasion_remote().is_some_and(|r| r.client == id.0) {
-        controls.frozen = true;
-    }
     if controls.frozen {
         cmd.forwardmove = 0;
         cmd.rightmove = 0;

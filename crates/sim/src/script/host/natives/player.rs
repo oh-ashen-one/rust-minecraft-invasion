@@ -1047,6 +1047,9 @@ fn register_inventory(registry: &mut NativeRegistry) {
         Ok(Value::Undefined)
     });
     registry.register(Method, "getcurrentweapon", |world, receiver, _| {
+        if super::super::invasion::is_target(world, receiver) {
+            return Ok(Value::string("none"));
+        }
         let id = client_of(world, receiver)?;
         let weapon = FrameWorld::from_world(world)
             .player(id)
@@ -1192,6 +1195,9 @@ fn register_inventory(registry: &mut NativeRegistry) {
         Ok(Value::Undefined)
     });
     registry.register(Method, "hasperk", |world, receiver, args| {
+        if super::super::invasion::is_target(world, receiver) {
+            return Ok(Value::Int(0));
+        }
         let client = player(world, receiver)?;
         let name = string(args, 0)?;
         Ok(Value::Int(

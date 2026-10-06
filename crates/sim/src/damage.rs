@@ -85,8 +85,15 @@ pub(crate) fn apply_explosion_blast(world: &mut FrameWorld, tick: Tick, blast: &
     if !world.publishes_snapshot() {
         return;
     }
-    if crate::voxel::active() {
+    if crate::voxel::terrain_active() {
         crate::voxel::push_explosion(blast.origin);
+    } else {
+        crate::voxel::push_invasion_blast(
+            blast.origin,
+            blast.radius,
+            blast.inner_damage,
+            blast.outer_damage,
+        );
     }
     let attempts = radius_player_attempts(world, blast);
     let glass = radius_glass_hits(world, blast);
@@ -103,17 +110,7 @@ pub(crate) fn apply_block_world_damage(world: &mut FrameWorld, tick: Tick) {
     if !world.publishes_snapshot() {
         return;
     }
-    for id in crate::voxel::take_invasion_heals() {
-        if let Some(ps) = world.player_mut(ClientId(id)) {
-            if ps.health > 0 {
-                ps.health = ps.max_health;
-            }
-        }
-    }
     for impact in crate::voxel::take_player_damage() {
-        if crate::voxel::invasion_remote().is_some_and(|r| r.client == impact.client) {
-            continue;
-        }
         let target = ClientId(impact.client);
         let from = impact.from;
         let amount = if impact.nonlethal {

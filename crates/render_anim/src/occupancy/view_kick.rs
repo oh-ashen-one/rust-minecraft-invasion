@@ -290,30 +290,6 @@ pub fn sync_camera_from_presented(
         ];
         return;
     }
-    if let Some(remote) =
-        sim::voxel::invasion_remote().filter(|r| r.client == local.0.0 && ps.health > 0)
-    {
-        let pose = WorldCameraPose {
-            origin: remote.origin,
-            angles: remote.angles,
-        };
-        let eye = transform_from_iw_view(pose);
-        for mut transform in &mut q {
-            *transform = eye;
-        }
-        for mut projection in &mut lenses {
-            if let Projection::Perspective(p) = &mut *projection {
-                p.fov = horizontal_to_vertical_fov_deg(remote.fov).to_radians();
-            }
-        }
-        if let Some(actions) = actions.as_deref_mut() {
-            actions.fov_scale = zoom_sensitivity(remote.fov);
-        }
-        kick.horiz_fov_deg = remote.fov;
-        kick.refdef_vieworg = pose.origin;
-        kick.refdef_view_angles = pose.angles;
-        return;
-    }
     let viewmodel = get_viewmodel_weapon_index(ps);
     if let Some((pose, fov, focus_distance)) = killcam.update(
         &presented,

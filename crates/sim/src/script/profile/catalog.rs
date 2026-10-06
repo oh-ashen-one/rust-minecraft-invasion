@@ -48,7 +48,20 @@ pub struct Catalog {
 }
 impl Catalog {
     pub fn iw4() -> Self {
-        Self::from_list(crate::script::Realm::Iw4, super::iw4_catalog::IW4)
+        let mut catalog = Self::from_list(crate::script::Realm::Iw4, super::iw4_catalog::IW4);
+        for name in [
+            "iw4l_invasion_targets",
+            "iw4l_invasion_blast",
+            "iw4l_invasion_nuke",
+        ] {
+            catalog.insert(Builtin::new(
+                Namespace::Function,
+                name,
+                Owner::Script,
+                false,
+            ));
+        }
+        catalog
     }
     pub fn t5() -> Self {
         Self::from_list(crate::script::Realm::T5, super::t5_catalog::T5)

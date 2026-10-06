@@ -839,9 +839,7 @@ pub fn sample_client_input(
             d[0] * forward[0] + d[1] * forward[1] + d[2] * forward[2] + radius >= 0.0
         };
         let mut targets: Vec<crate::client::pad_aim::AimTarget> = Vec::new();
-        if actions.pad_aim_assist > 0
-            && !sim::voxel::invasion_remote().is_some_and(|r| r.client == local.0.0)
-        {
+        if actions.pad_aim_assist > 0 {
             const RADIUS: f32 = 10.0;
             let snapshot = presented.snapshot();
             let team = |id: sim::ClientId| {
@@ -1071,12 +1069,6 @@ pub fn sample_client_input(
     }
     if let Some(ps) = ps.filter(|_| !frozen) {
         for slot in slots {
-            if slot == usize::from(sim::invasion::streaks::ACTIVATION_SLOT)
-                && sim::voxel::active()
-                && !sim::voxel::terrain_active()
-            {
-                continue;
-            }
             if !input_iw4::weapon_select::weapon_cycle_allowed(ps, clock.time(), select.time, 0, 0)
             {
                 continue;

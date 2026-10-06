@@ -42,6 +42,7 @@ impl Default for NativeRegistry {
             runtime.objects.insert(id, BTreeMap::new());
             Ok(Value::Object(id))
         });
+        super::invasion::register(&mut registry);
         natives::iw4::register(&mut registry);
         natives::math::register(&mut registry);
         natives::engine::register(&mut registry);

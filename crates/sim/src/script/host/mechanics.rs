@@ -61,6 +61,7 @@ pub(crate) fn advance_mechanics(world: &mut World) {
     if runtime.fault.is_some() || runtime.program.is_none() {
         return;
     }
+    super::invasion::advance(world);
     advance_motions(world, now);
     advance_bodies(world);
     apply_entity_links(world);

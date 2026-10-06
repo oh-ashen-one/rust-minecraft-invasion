@@ -16,9 +16,6 @@ pub fn presented_is_third_person(
     local: ClientId,
     in_killcam: bool,
 ) -> bool {
-    if sim::voxel::invasion_remote().is_some_and(|r| r.client == local.0) {
-        return true;
-    }
     let Some(ps) = presented.player(local) else {
         return false;
     };

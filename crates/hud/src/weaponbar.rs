@@ -562,8 +562,7 @@ impl HudPlayerVisInput<'_> {
             ads_javelin: weapons.is_some_and(|w| ads_javelin(ps, w)),
             missilecam: snapshot
                 .and_then(|s| s.meta.for_client(local))
-                .is_some_and(|m| m.remote_missile.is_some())
-                || sim::voxel::invasion_remote().is_some_and(|r| r.client == local.0),
+                .is_some_and(|m| m.remote_missile.is_some()),
             emp_jammed: ps.other_flags & 0x400 != 0,
             game_ended: snapshot.is_some_and(|s| {
                 matches!(
@@ -703,8 +702,7 @@ pub(crate) fn update_weaponbar(
             .shellshock(local.0)
             .map_or(SCREEN_BLEND_BLURRED, |shock| shock.screen_type),
         in_killcam: view.as_deref().is_some_and(|v| v.in_killcam()),
-        missilecam: meta.is_some_and(|m| m.remote_missile.is_some())
-            || sim::voxel::invasion_remote().is_some_and(|r| r.client == local.0.0),
+        missilecam: meta.is_some_and(|m| m.remote_missile.is_some()),
         game_ended: presented.snapshot().is_some_and(|s| {
             matches!(
                 s.meta.phase,

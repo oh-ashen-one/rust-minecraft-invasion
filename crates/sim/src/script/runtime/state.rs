@@ -66,6 +66,7 @@ pub(crate) struct Runtime {
     pub(crate) missiles_seen_ms: i32,
     pub(crate) lingering: Vec<(i64, u64)>,
     pub(crate) pending_deletes: Vec<u64>,
+    pub(crate) invasion_targets: BTreeMap<u64, u64>,
     pub(crate) vehicles: BTreeMap<u64, host::vehicles::Heli>,
     pub(crate) use_selected: BTreeMap<u32, u64>,
     pub(crate) t5: host::natives::t5::T5State,

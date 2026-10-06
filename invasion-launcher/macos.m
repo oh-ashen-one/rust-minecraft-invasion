@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-static NSString *Version = @"0.8.1";
+static NSString *Version = @"0.9.0";
 static NSString *RuntimeVersion = @"0.8.0";
 static NSURL *RuntimeRoot(void) {
     NSString *custom=NSProcessInfo.processInfo.environment[@"IW4L_INVASION_HOME"];

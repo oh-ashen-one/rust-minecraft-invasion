@@ -54,19 +54,17 @@ pub fn revision() -> u64 {
 /// world's owner to apply.
 #[derive(Clone, Copy, Debug)]
 pub enum VoxelEvent {
-    StreakAction {
-        client: u32,
+    InvasionBlast {
+        origin: [f32; 3],
+        radius: f32,
+        max: f32,
+        min: f32,
     },
     /// A bullet struck this block, with the damage it would have done: the
     /// weapon's, at that range, after penetration.
-    Shot {
-        block: [i32; 3],
-        damage: f32,
-    },
+    Shot { block: [i32; 3], damage: f32 },
     /// An explosion went off here, in blocks.
-    Explosion {
-        center: [f64; 3],
-    },
+    Explosion { center: [f64; 3] },
     /// A bullet struck the mob with this key, with the damage it would have
     /// done at that range, from this block point.
     MobShot {
@@ -324,12 +322,11 @@ pub fn activate_mobs(origin: [f64; 3]) {
 }
 
 pub fn deactivate() {
-    set_invasion_remote(None);
-    let _ = take_invasion_heals();
     if let Ok(mut world) = WORLD.write() {
         *world = None;
     }
     let _ = take_events();
+    let _ = take_invasion_rewards();
     let _ = take_player_damage();
     set_mob_boxes(Vec::new());
 }
@@ -690,36 +687,29 @@ pub(crate) fn trace(
     }
 }
 
-#[derive(Clone, Copy, Debug)]
-pub struct InvasionRemote {
-    pub client: u32,
-    pub origin: [f32; 3],
-    pub angles: [f32; 3],
-    pub fov: f32,
-}
-static INVASION_REMOTE: RwLock<Option<InvasionRemote>> = RwLock::new(None);
-pub fn invasion_remote() -> Option<InvasionRemote> {
-    INVASION_REMOTE.read().ok().and_then(|r| *r)
-}
-pub fn set_invasion_remote(view: Option<InvasionRemote>) {
-    if let Ok(mut state) = INVASION_REMOTE.write() {
-        *state = view;
+static INVASION_REWARDS: std::sync::Mutex<Vec<(u32, &'static str)>> =
+    std::sync::Mutex::new(Vec::new());
+pub fn queue_invasion_reward(client: u32, name: &'static str) {
+    if let Ok(mut rewards) = INVASION_REWARDS.lock() {
+        rewards.push((client, name));
     }
 }
-pub fn push_streak_action(client: u32) {
-    if let Ok(mut events) = EVENTS.lock() {
-        events.push(VoxelEvent::StreakAction { client });
-    }
-}
-static INVASION_HEALS: std::sync::Mutex<Vec<u32>> = std::sync::Mutex::new(Vec::new());
-pub fn invasion_heal(client: u32) {
-    if let Ok(mut q) = INVASION_HEALS.lock() {
-        q.push(client);
-    }
-}
-pub(crate) fn take_invasion_heals() -> Vec<u32> {
-    INVASION_HEALS
+pub(crate) fn take_invasion_rewards() -> Vec<(u32, &'static str)> {
+    INVASION_REWARDS
         .lock()
-        .map(|mut q| std::mem::take(&mut *q))
+        .map(|mut rewards| std::mem::take(&mut *rewards))
         .unwrap_or_default()
+}
+
+pub(crate) fn push_invasion_blast(origin: [f32; 3], radius: f32, max: f32, min: f32) {
+    if active() && !terrain_active() {
+        if let Ok(mut events) = EVENTS.lock() {
+            events.push(VoxelEvent::InvasionBlast {
+                origin,
+                radius,
+                max,
+                min,
+            });
+        }
+    }
 }

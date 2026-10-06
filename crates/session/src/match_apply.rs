@@ -845,18 +845,28 @@ fn preflight_match_install(
             return Err(InstallRefusal::with_gap(gap, gap));
         }
     };
-    struct Sources(assets::ScriptSources);
+    struct Sources(assets::ScriptSources, bool);
     impl sim::script::SourceResolver for Sources {
         fn read(&self, module: &str) -> Result<String, String> {
-            self.0
-                .read(module)
+            self.read_bytes(module)
                 .map(|bytes| sim::script::decode_source(&bytes))
         }
         fn read_bytes(&self, module: &str) -> Result<Vec<u8>, String> {
+            if self.1 {
+                let bridge = sim::script::host::invasion::HUD_MODULE;
+                if module == bridge {
+                    return Ok(sim::script::host::invasion::HUD_SOURCE.as_bytes().to_vec());
+                }
+                let source = sim::script::decode_source(&self.0.read(module)?);
+                return sim::script::host::invasion::adapt_source(module, source)
+                    .map(String::into_bytes);
+            }
             self.0.read(module)
         }
     }
-    let sources = Sources(std::mem::take(&mut prepared.scripts));
+    let invasion = zone.rsplit(':').next() == Some("mp_rust")
+        && std::env::var("IW4L_RUST_INVASION").as_deref() == Ok("1");
+    let sources = Sources(std::mem::take(&mut prepared.scripts), invasion);
     let gametype = kind
         .script_tokens()
         .iter()
@@ -904,7 +914,15 @@ fn preflight_match_install(
     } else {
         zone
     };
-    let startup = sim::script::Iw4Startup::new(&sources, gametype, script_map);
+    let mut startup = sim::script::Iw4Startup::new(&sources, gametype, script_map);
+    if invasion {
+        startup
+            .roots
+            .push(sim::script::host::invasion::HUD_MODULE.into());
+        startup
+            .entries
+            .push(format!("{}::main", sim::script::host::invasion::HUD_MODULE));
+    }
     let roots: Vec<&str> = startup.roots.iter().map(String::as_str).collect();
     let scripts = sim::script::Program::load(&sources, &roots, &sim::script::Catalog::iw4())
         .map_err(|e| script_refusal(zone, gametype, "compile", &e))?;
@@ -944,7 +962,10 @@ fn preflight_match_install(
     if assets::minecraft_map::is_minecraft_load(zone) {
         for limit in ["timelimit", "scorelimit"] {
             let name = format!("scr_{gametype}_{limit}");
-            match script_dvars.iter_mut().find(|(set, _)| set.eq_ignore_ascii_case(&name)) {
+            match script_dvars
+                .iter_mut()
+                .find(|(set, _)| set.eq_ignore_ascii_case(&name))
+            {
                 Some((_, set)) => *set = "0".into(),
                 None => script_dvars.push((name, "0".into())),
             }

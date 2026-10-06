@@ -801,16 +801,7 @@ fn apply_actions(world: &mut FrameWorld, tick: Tick, actions: &[(ClientId, Clien
                 request_id: _,
                 slot,
             } => {
-                if slot == crate::invasion::streaks::ACTIVATION_SLOT
-                    && crate::voxel::active()
-                    && !crate::voxel::terrain_active()
-                {
-                    if world.publishes_snapshot() {
-                        crate::voxel::push_streak_action(id.0);
-                    }
-                } else {
-                    crate::script::action_slot_command(world.ecs(), id.0, slot);
-                }
+                crate::script::action_slot_command(world.ecs(), id.0, slot);
             }
             ClientAction::SelectClass {
                 request_id,

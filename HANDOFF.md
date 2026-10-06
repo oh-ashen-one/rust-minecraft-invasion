@@ -1,3 +1,37 @@
+# Native killstreak integration — v0.9.0 candidate
+
+Branch: `codex/native-mw2-killstreaks`, based on the menu-fix branch at c84a909.
+The owner accepted that base, then requested original MW2 rewards and aircraft,
+a bottom-left earned stack, manual activation and mob-kill credit. Keep the
+accepted v0.8.1 app intact. Build/install this candidate separately and let the
+owner playtest; do not send input into a match or restart their game.
+
+The custom support implementation has been removed. Mob deaths feed the full
+fifteen-reward ladder into the original reward script. Original persistent
+reward records drive the stock item/action slot and a bottom-left HUD using
+owned stock icon materials, grouping repeated rewards with counts. The stock
+stack is newest-first. No award invokes deployment.
+
+The source adapter applies only to opt-in Rust invasion and modifies the owned
+scripts in memory. It changes enemy acquisition in three helicopter routines
+and the Harrier routine, adds mob blast damage to airstrike/nuke paths, and loads
+an authored HUD module. Native sentry acquisition and vehicle/turret bullet rays
+recognize mob targets. Native explosions preserve weapon radius/falloff and
+cover checks. UAV uses the original compass. Native nuke ends the match; EMP
+and Counter-UAV no longer apply invented creature debuffs.
+
+Full build and original-script-graph compilation passed, and all fifteen costs,
+weapon refs and icon refs matched the local table. See VALIDATION.md for bounds.
+Live visuals, activation sequences, remote control and sound await the owner.
+Probes/extracts stay out of publication. Do not merge this branch or replace the
+accepted app based only on these offline checks.
+
+Runtime data remains in `0.8.0` Application Support, including the owner's
+controller/class/settings and machine-local RendererSlotDirectory. The candidate
+shares the existing single-instance guard. The public v0.8 release stays unchanged.
+
+---
+
 # Menu recovery patch — v0.8.1
 
 Branch: `codex/fix-invasion-menu-responses`, based on public v0.8.0 `97bed1e`.

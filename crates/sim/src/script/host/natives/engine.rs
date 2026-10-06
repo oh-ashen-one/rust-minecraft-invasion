@@ -513,6 +513,7 @@ fn radius_damage(
     let radius = float(args, 1)?;
     let max = float(args, 2)?;
     let min = float(args, 3)?;
+    crate::voxel::push_invasion_blast(origin, radius, max, min);
     let attacker = match args.get(4) {
         Some(Value::Object(id)) => runtime(world).player_client(*id).map(crate::ClientId),
         _ => None,

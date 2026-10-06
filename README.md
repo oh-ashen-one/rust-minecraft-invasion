@@ -31,9 +31,7 @@ The Mac build is ad-hoc signed, not Apple-notarized. If macOS blocks the downloa
 | Jump / reload | Space / R | Cross / Square |
 | Switch weapon | Existing MW2 weapon-cycle binding | Triangle |
 | Deploy next earned streak | **4** | **D-pad Right** |
-| Exit a remote streak view | **4** | **D-pad Right** |
 | Remote gunship fire / Predator boost | Left mouse | R2 |
-| Cycle AC-130 cannon | Right mouse | L2 |
 
 Controllers use Apple’s GameController framework on macOS; Steam Input is not required. Focus the game window to play. Controller rumble is not implemented by the native Mac bridge. Options → Controls / Controller retains the normal binding and sensitivity menus.
 
@@ -48,8 +46,9 @@ Controllers use Apple’s GameController framework on macOS; Steam Input is not 
 
 ## Every standard MW2 killstreak, enabled together
 
-No killstreak loadout selection is required. Your weapon and grenade kills unlock **all rewards at each threshold**, including both rewards when they share a cost. Rewards queue until you press D-pad Right / 4. Death resets your consecutive-kill count but retains earned rewards. Support kills and mobs killing each other do not farm more rewards.
+No killstreak loadout selection is required. Minecraft mob kills unlock **all rewards at each threshold**, including rewards that share a cost. Earning a reward never deploys it. The original MW2 scripts retain the reward stack across death, display the earned notification, equip the appropriate killstreak item, and handle manual use through **D-pad Right / 4**. The consecutive mob-kill counter resets on death.
 
+The bottom-left stack uses the original reward icons from your MW2 installation. Repeated rewards show a count; the stock action-slot icon shows the next usable item. Rewards follow MW2's newest-first stack order.
 | Consecutive kills | Rewards |
 | --- | --- |
 | 3 | UAV |
@@ -63,9 +62,9 @@ No killstreak loadout selection is required. Your weapon and grenade kills unloc
 | 15 | EMP |
 | 25 | Tactical Nuke |
 
-These are **arena adaptations** of the full standard reward roster, with custom support models/effects and targeting for Minecraft mobs. They do not reproduce all stock MW2 killstreak animations or cinematics. UAV reveals mobs on a radar; Counter-UAV disrupts ranged accuracy/range; EMP suppresses ranged attacks. Walk up to a landed supply crate to collect its reward and heal. Emergency Airdrop supplies four crates.
+The v0.9 source branch uses the original MW2 killstreak scripts, aircraft, weapons, effects and sounds from the player's own installation. Minecraft mobs are exposed to helicopter/Harrier/sentry targeting; native bullets and explosions damage their hitboxes. UAV pings appear on the original minimap. The custom block aircraft, radar panel, remote cameras and supply-crate behavior have been removed.
 
-Predator, Chopper Gunner and AC-130 have player-controlled remote views. Your body is held still and protected from mob damage while controlling them. The AC-130 has 25 mm, 40 mm and 105 mm modes. The nuke counts down for ten seconds, clears the living mob population, heals you and restarts the reward ladder; the survival arena continues with respawns.
+The original scripts control deployment restrictions, remote weapons, care-package collection, EMP and Counter-UAV behavior. The nuke follows the original countdown and match-ending sequence. This runtime is still experimental; the new integration requires live player validation. The linked v0.8 download predates this native-streak change.
 
 ## Build from source
 

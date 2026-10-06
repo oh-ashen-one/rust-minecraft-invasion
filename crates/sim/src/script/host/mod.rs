@@ -6,6 +6,7 @@ pub mod entities;
 pub mod entity_damage;
 pub mod guidance;
 pub mod hud;
+pub mod invasion;
 pub(crate) mod iw4_gametype;
 pub mod mechanics;
 pub mod natives;

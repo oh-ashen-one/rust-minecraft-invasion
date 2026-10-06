@@ -178,28 +178,34 @@ impl Arena {
                 mob.hurt = 0.22;
                 if mob.health <= 0.0 {
                     self.kills += 1;
-                    let earned_before = self.streaks.queue.len();
-                    self.streaks.award_kill(self.clock);
-                    if self.streaks.queue.len() > earned_before {
-                        self.sounds.push(SoundCue {
-                            name: "block.note_block.pling",
-                            position: mob.position,
-                            volume: 1.0,
-                        });
-                    }
+                    self.streaks.award_kill();
                 }
             }
         }
     }
     pub fn explode(&mut self, center: Vec3, collision: &impl Collision) {
+        self.blast(center, 250.0, 260.0, 0.0, collision);
+    }
+    pub fn blast(
+        &mut self,
+        center: Vec3,
+        radius: f32,
+        max: f32,
+        min: f32,
+        collision: &impl Collision,
+    ) {
+        if !radius.is_finite() || radius <= 0.0 || !max.is_finite() || !min.is_finite() {
+            return;
+        }
         let hits: Vec<(u64, f32)> = self
             .mobs
             .iter()
             .filter_map(|mob| {
                 let at = mob.position + Vec3::Z * mob.kind.dimensions().1 * mob.scale * 0.5;
                 let distance = center.distance(at);
-                (distance < 250.0 && collision.sweep(center, at, 0.0, 0.0).fraction > 0.99)
-                    .then_some((mob.id, 260.0 * (1.0 - distance / 250.0)))
+                let trace = collision.sweep(center, at, 0.0, 0.0);
+                (mob.health > 0.0 && distance < radius && !trace.solid && trace.fraction > 0.99)
+                    .then_some((mob.id, max + (min - max) * distance / radius))
             })
             .collect();
         for (id, damage) in hits {
@@ -293,7 +299,6 @@ impl Arena {
             self.refill(player, collision);
         }
         self.wave = 1 + self.kills / self.target_population().max(1) as u32;
-        self.advance_streaks(dt, player, collision);
         let mut attacks = self.advance_behaviors(dt, player, collision);
         if self.clock < self.hurt_until {
             attacks.clear();

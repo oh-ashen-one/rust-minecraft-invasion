@@ -36,6 +36,7 @@ pub(crate) struct CompassRaster;
 #[derive(Resource, Default)]
 pub(crate) struct CompassPingLatch {
     actors: HashMap<u32, PingActor>,
+    mobs: HashMap<u64, PingActor>,
     last_time: Option<i32>,
     radar_progress: f32,
     radar_last_ms: Option<i32>,
@@ -164,7 +165,9 @@ pub(crate) fn update_compass(
                 north_yaw: MINECRAFT_NORTH_YAW,
             })
         });
-    let Some(drawable) = block_world.or_else(|| resolve(compass.as_deref(), &mut hud_images, &mut gaps)) else {
+    let Some(drawable) =
+        block_world.or_else(|| resolve(compass.as_deref(), &mut hud_images, &mut gaps))
+    else {
         hide(&mut pass);
         return;
     };
@@ -241,6 +244,22 @@ pub(crate) fn update_compass(
     )
     .map(|line| radar_line_texture_center_s(line, player_xy, drawable.max_range));
     let mut live: Vec<([f32; 2], f32)> = Vec::new();
+    for actor in latch.mobs.values() {
+        if let Some(alpha) =
+            compass_sound_ping_fade(cg_clock.time(), actor.begin_fade_ms, actor.fade_seconds)
+        {
+            live.push((
+                world_pos_to_compass_partial(
+                    north,
+                    player_xy,
+                    actor.last_pos,
+                    map_item.rect.h * COMPASS_SIZE_DEFAULT,
+                    drawable.max_range,
+                ),
+                alpha,
+            ));
+        }
+    }
     for (&id, actor) in &latch.actors {
         let Some(meta) = presented
             .snapshot()
@@ -682,6 +701,7 @@ fn take_fire_pings(
 ) -> i32 {
     if latch.last_time.is_some_and(|last| cg_time_ms < last) || presented.snapshot().is_none() {
         latch.actors.clear();
+        latch.mobs.clear();
         latch.radar_progress = 0.0;
         latch.radar_last_ms = None;
     }
@@ -724,6 +744,10 @@ fn take_radar_pings(
     max_range: f32,
     latch: &mut CompassPingLatch,
 ) -> Option<[f32; 3]> {
+    let targets = sim::voxel::mob_targets();
+    latch
+        .mobs
+        .retain(|key, _| targets.iter().any(|(id, _, _)| id == key));
     let snapshot = presented.snapshot()?;
     let radar = snapshot
         .meta
@@ -751,6 +775,19 @@ fn take_radar_pings(
         return Some(line);
     }
     let prev = radar_line(bounds, max_range, old);
+    for (key, min, max) in targets {
+        let pos = [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5];
+        if radar_lines_surround_point(prev, line, pos) {
+            latch.mobs.insert(
+                key,
+                PingActor {
+                    begin_fade_ms: now_ms,
+                    fade_seconds: COMPASS_RADAR_PING_FADE_TIME_DEFAULT,
+                    last_pos: pos,
+                },
+            );
+        }
+    }
     for (id, _) in &snapshot.players {
         if *id == local {
             continue;

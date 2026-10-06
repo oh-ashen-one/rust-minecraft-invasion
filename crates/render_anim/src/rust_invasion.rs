@@ -32,15 +32,6 @@ struct Runtime {
 }
 #[derive(Component)]
 struct InvasionStatus;
-#[derive(Component)]
-struct InvasionRadar;
-#[derive(Component)]
-struct RadarDot(usize);
-#[derive(Component)]
-struct NukeFlash;
-#[derive(Component)]
-struct RemoteReticle;
-
 fn enabled() -> bool {
     std::env::var("IW4L_RUST_INVASION").as_deref() == Ok("1")
 }
@@ -59,83 +50,6 @@ pub(crate) fn register(app: &mut App) {
         );
 }
 fn status(mut commands: Commands) {
-    commands.spawn((
-        RemoteReticle,
-        Visibility::Hidden,
-        Text::new("+"),
-        TextFont {
-            font_size: bevy::text::FontSize::Px(34.0),
-            ..default()
-        },
-        TextColor(Color::srgb(0.4, 1.0, 0.45)),
-        Node {
-            position_type: PositionType::Absolute,
-            left: percent(49.5),
-            top: percent(48.0),
-            ..default()
-        },
-        GlobalZIndex(105),
-    ));
-    commands.spawn((
-        NukeFlash,
-        Node {
-            position_type: PositionType::Absolute,
-            width: percent(100),
-            height: percent(100),
-            ..default()
-        },
-        BackgroundColor(Color::NONE),
-        GlobalZIndex(90),
-    ));
-    commands
-        .spawn((
-            InvasionRadar,
-            Visibility::Hidden,
-            Node {
-                position_type: PositionType::Absolute,
-                right: px(20),
-                top: px(65),
-                width: px(170),
-                height: px(170),
-                ..default()
-            },
-            BackgroundColor(Color::srgba(0.01, 0.06, 0.03, 0.8)),
-            GlobalZIndex(101),
-        ))
-        .with_children(|panel| {
-            panel.spawn((
-                Text::new("UAV"),
-                TextFont {
-                    font_size: bevy::text::FontSize::Px(13.0),
-                    ..default()
-                },
-                TextColor(Color::WHITE),
-            ));
-            panel.spawn((
-                Node {
-                    position_type: PositionType::Absolute,
-                    left: px(83),
-                    top: px(83),
-                    width: px(5),
-                    height: px(5),
-                    ..default()
-                },
-                BackgroundColor(Color::WHITE),
-            ));
-            for i in 0..sim::invasion::Kind::ALL.len() * 2 {
-                panel.spawn((
-                    RadarDot(i),
-                    Node {
-                        position_type: PositionType::Absolute,
-                        width: px(4),
-                        height: px(4),
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgb(1.0, 0.18, 0.1)),
-                    Visibility::Hidden,
-                ));
-            }
-        });
     commands.spawn((
         InvasionStatus,
         Text::new("RUST · MINECRAFT INVASION  |  Create Game → Rust"),
@@ -190,40 +104,8 @@ fn update(
     mut runtime: NonSendMut<Runtime>,
     mut texts: Query<&mut Text, With<InvasionStatus>>,
     mut sounds: ResMut<audio::McSoundQueue>,
-    actions: Option<Res<net::ClientActionInput>>,
-    mut radar: Query<
-        &mut Visibility,
-        (
-            With<InvasionRadar>,
-            Without<RadarDot>,
-            Without<RemoteReticle>,
-        ),
-    >,
-    mut dots: Query<
-        (&RadarDot, &mut Node, &mut Visibility),
-        (Without<InvasionRadar>, Without<RemoteReticle>),
-    >,
-    mut flash: Query<&mut BackgroundColor, With<NukeFlash>>,
-    mut reticles: Query<
-        &mut Visibility,
-        (
-            With<RemoteReticle>,
-            Without<InvasionRadar>,
-            Without<RadarDot>,
-        ),
-    >,
 ) {
-    for mut visibility in &mut reticles {
-        *visibility = Visibility::Hidden;
-    }
-    for mut visibility in &mut radar {
-        *visibility = Visibility::Hidden;
-    }
-    for mut color in &mut flash {
-        *color = BackgroundColor(Color::NONE);
-    }
     for _ in torn.read() {
-        sim::voxel::set_invasion_remote(None);
         runtime.wanted = false;
         runtime.arena = None;
         runtime.accumulator = 0.0;
@@ -233,7 +115,6 @@ fn update(
         sim::voxel::deactivate();
     }
     for event in installed.read() {
-        sim::voxel::set_invasion_remote(None);
         runtime.wanted = event.zone.rsplit(':').next() == Some("mp_rust");
         runtime.arena = None;
         runtime.accumulator = 0.0;
@@ -318,9 +199,6 @@ fn update(
             let art = art.as_mut().unwrap();
             for event in sim::voxel::take_events() {
                 match event {
-                    sim::voxel::VoxelEvent::StreakAction { client } if client == local.0.0 => {
-                        arena.use_streak(Vec3::from_array(ps.origin), ps.viewangles, &collision);
-                    }
                     sim::voxel::VoxelEvent::MobShot { key, damage, .. } => {
                         let target = arena
                             .mobs
@@ -341,6 +219,14 @@ fn update(
                                 .play(&art.packs, &event, Some(position), 0.8, 1.0);
                         }
                     }
+                    sim::voxel::VoxelEvent::InvasionBlast {
+                        origin,
+                        radius,
+                        max,
+                        min,
+                    } => {
+                        arena.blast(Vec3::from_array(origin), radius, max, min, &collision);
+                    }
                     sim::voxel::VoxelEvent::Explosion { center } => arena.explode(
                         Vec3::from_array(sim::voxel::to_map([0.0; 3], center)),
                         &collision,
@@ -348,18 +234,10 @@ fn update(
                     _ => {}
                 }
             }
-            let feet = Vec3::from_array(ps.origin);
-            arena.streaks.view_angles = ps.viewangles;
-            arena.streaks.fire = actions.as_ref().is_some_and(|a| a.client.kb.attack.active);
-            arena.streaks.alt = actions.as_ref().is_some_and(|a| a.client.kb.speed.active);
-            if let Some(remote) = arena.streaks.remote() {
-                sim::voxel::set_invasion_remote(Some(sim::voxel::InvasionRemote {
-                    client: local.0.0,
-                    origin: remote.position.to_array(),
-                    angles: remote.aim,
-                    fov: 65.0,
-                }));
+            for reward in arena.streaks.pending.drain(..) {
+                sim::voxel::queue_invasion_reward(local.0.0, reward.script_name());
             }
+            let feet = Vec3::from_array(ps.origin);
             *accumulator += time.delta_secs().min(0.15);
             while *accumulator >= 1.0 / 20.0 {
                 *accumulator -= 1.0 / 20.0;
@@ -374,43 +252,6 @@ fn update(
                         });
                     }
                 }
-            }
-            sim::voxel::set_invasion_remote(arena.streaks.remote().map(|r| {
-                sim::voxel::InvasionRemote {
-                    client: local.0.0,
-                    origin: r.position.to_array(),
-                    angles: r.aim,
-                    fov: 65.0,
-                }
-            }));
-            if arena.streaks.remote().is_some() {
-                for mut visibility in &mut reticles {
-                    *visibility = Visibility::Visible;
-                }
-            }
-            if std::mem::take(&mut arena.streaks.heal) {
-                sim::voxel::invasion_heal(local.0.0);
-            }
-            if arena.streaks.radar_until > arena.clock {
-                for mut visibility in &mut radar {
-                    *visibility = Visibility::Visible;
-                }
-                let yaw = ps.viewangles[1].to_radians();
-                for (dot, mut node, mut visibility) in &mut dots {
-                    *visibility = Visibility::Hidden;
-                    if let Some(mob) = arena.mobs.get(dot.0).filter(|m| m.health > 0.0) {
-                        let d = mob.position - feet;
-                        let x = (d.x * yaw.sin() - d.y * yaw.cos()) / 1400.0;
-                        let y = -(d.x * yaw.cos() + d.y * yaw.sin()) / 1400.0;
-                        node.left = px(83.0 + x.clamp(-1.0, 1.0) * 78.0);
-                        node.top = px(83.0 + y.clamp(-1.0, 1.0) * 78.0);
-                        *visibility = Visibility::Visible;
-                    }
-                }
-            }
-            let nuke_flash = ((arena.streaks.nuke_flash_until - arena.clock) / 1.3).clamp(0.0, 0.8);
-            for mut color in &mut flash {
-                *color = BackgroundColor(Color::srgba(1.0, 0.98, 0.85, nuke_flash));
             }
             for cue in arena.take_sounds() {
                 art.sounds
@@ -491,7 +332,6 @@ fn update(
                 abilities::held_weapon(&mut mesh, &pose, art.white_uv);
             }
             abilities::append(&mut mesh, arena, art.white_uv);
-            abilities::supports(&mut mesh, arena, art.white_uv);
             view.active = true;
             view.mobs_only = true;
             view.origin = [0.0; 3];
@@ -526,53 +366,6 @@ fn update(
             } else {
                 ""
             };
-            let queue = arena.streaks.queue.front().map_or("NONE", |r| r.name());
-            let next = arena
-                .streaks
-                .next_cost()
-                .map_or("ALL REWARDS EARNED".to_owned(), |cost| {
-                    format!("NEXT REWARD: {cost} KILLS")
-                });
-            let banner = if arena.streaks.banner_until > arena.clock {
-                arena.streaks.banner.as_str()
-            } else {
-                ""
-            };
-            let remote = arena
-                .streaks
-                .remote()
-                .map(|r| {
-                    use sim::invasion::streaks::Reward;
-                    let controls = match r.reward {
-                        Reward::Predator => "R2 / CLICK: BOOST".to_owned(),
-                        Reward::Ac130 => format!(
-                            "{}  |  R2 / CLICK: FIRE  |  L2 / RIGHT CLICK: SWITCH CANNON",
-                            ["25 MM", "40 MM", "105 MM"][r.mode as usize]
-                        ),
-                        _ => "R2 / CLICK: FIRE".to_owned(),
-                    };
-                    format!(
-                        "{}  {:.0}s  |  {}  |  D-pad Right / 4: EXIT",
-                        r.reward.name(),
-                        (r.duration - r.age).ceil(),
-                        controls
-                    )
-                })
-                .unwrap_or_default();
-            let nuke = arena
-                .streaks
-                .active
-                .iter()
-                .find(|s| s.reward == sim::invasion::streaks::Reward::Nuke)
-                .map(|s| format!("TACTICAL NUKE IN {:.0}", (10.0 - s.age).ceil()))
-                .unwrap_or_default();
-            let disruption = if arena.streaks.emp_until > arena.clock {
-                "EMP: ENEMY PROJECTILES DISABLED"
-            } else if arena.streaks.jam_until > arena.clock {
-                "COUNTER-UAV: ENEMY AIM DISRUPTED"
-            } else {
-                ""
-            };
             label = format!(
                 "RUST INVASION  |  WAVE {}  |  {} ENEMIES  |  {} RESPAWNING  |  {} KILLS{}{}",
                 arena.wave,
@@ -582,10 +375,8 @@ fn update(
                 boss,
                 condition
             );
-            label.push_str(&format!("\nHEALTH {}/{}  |  STREAK {}  |  {}\nD-pad Right / 4: {}  |  {} REWARDS QUEUED\n{}\n{}\n{}\n{}",ps.health,ps.max_health,arena.streaks.count,next,queue,arena.streaks.queue.len(),banner,remote,nuke,disruption));
         }
     } else if runtime.wanted && !alive {
-        sim::voxel::set_invasion_remote(None);
         // Pause AI on death/class selection and clear targets. Retain the
         // wave so respawning cannot duplicate bosses.
         sim::voxel::set_mob_boxes(Vec::new());
