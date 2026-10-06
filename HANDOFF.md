@@ -1,3 +1,26 @@
+# Published release handoff — v0.9.0
+
+The owner declared this build complete and explicitly requested public release
+with proper naming, credits and agent-friendly setup on October 6, 2026.
+Release branch: `release/0.9.0`; tag: `v0.9.0`.
+Display name: Rust Minecraft Invasion — Native MW2 Killstreaks.
+Public repository: `oh-ashen-one/rust-minecraft-invasion`.
+
+This publication changes documentation, attribution and packaging only. The
+accepted game binary comes from code commit 52a6f32; the release manifest records
+that separately from the release source commit. Do not launch or modify the
+owner's installed game as part of publication. No merge/push to main is needed.
+README.md is the player entry point, PLAY_WITH_AGENT.md the agent setup guide,
+and CREDITS.md / NOTICE preserve project lineage and dependency distinctions.
+The downloadable ZIP contains the native Mac app and source/credits/setup links,
+not game data. Other platform source paths are not verified binary releases.
+
+Owner acceptance supersedes the previous candidate handoff's pending-owner state.
+It does not establish exhaustive per-reward checks or measured FPS. Keep the
+historical validation details below and in VALIDATION.md as bounded evidence.
+
+---
+
 # Native killstreak integration — v0.9.0 candidate
 
 Branch: `codex/native-mw2-killstreaks`, based on the menu-fix branch at c84a909.

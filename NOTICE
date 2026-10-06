@@ -1,7 +1,8 @@
 Rust Minecraft Invasion
 
 Custom invasion, reward ladder and portable launcher modifications by oh-ashen-one.
-Based on the upstream projects credited below.
+Based on the upstream projects credited below. Full contribution and research
+credits are in CREDITS.md, also included with the release.
 
 IW4L
 
@@ -42,9 +43,10 @@ GNU FreeFont (crates/console/assets/FreeMono.otf)
 Third-party source code
 --------------------------------------------------------------------------------
 
-No third-party source code is vendored in this repository, and the build links
-no third-party project named below. IW4L's own dependencies are the crates
-declared in Cargo.toml, under their own licences.
+The workspace includes source inherited from IW4L and the mashup, including
+MinecraftOSS under third_party/minecraftoss/. Cargo dependencies retain their
+own licences. The research projects in the References section below are not
+vendored or linked; that statement does not exclude the in-tree projects here.
 
 The fork carries two projects of its own author's in-tree, built as part of
 the workspace:

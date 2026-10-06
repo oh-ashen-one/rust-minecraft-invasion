@@ -1,3 +1,19 @@
+# v0.9.0 publication acceptance
+
+On October 6, 2026, the owner declared the build officially done and requested
+public release. The accepted game binary is preserved; publication updates
+credits, setup documentation and packaging. This records owner acceptance, not
+an automated exhaustive playthrough or new performance measurement.
+
+Publication review: no tracked game-archive/JAR/script-dump/private-key file
+paths were found. Gitleaks scanned the public history and flagged two ordinary
+Rust draw-surface key comparisons, manually confirmed as false positives; the
+release's staged changes passed with no secret findings. The broad inherited
+publish-check findings described below remain unchanged. No game runtime code
+was changed for publication.
+
+---
+
 # v0.9.0 native killstreak candidate
 
 The owner confirmed the v0.8.1 base works and looks good. That acceptance

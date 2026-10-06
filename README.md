@@ -1,12 +1,19 @@
 # Rust Minecraft Invasion
 
-This task branch contains the **0.8.1 menu-recovery patch**: team choices remain responsive after Back, and client-opened End Round popups reach the game script. The public release linked below is still 0.8.0. The patch preserves the existing 0.8.0 runtime/profile directory.
+**v0.9.0 — Native MW2 Killstreaks.** Completed and accepted for publication by the project owner. Includes the team-menu recovery fix and preserves existing profiles.
 
 A local survival crossover: **Modern Warfare 2’s Rust map and weapons against a crowd of Minecraft mobs**, including Ender Dragons, Withers and Wardens.
 
-**[Download the Apple silicon Mac build](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases/tag/v0.8.0)** · [Release downloads](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases) · [Source build](#build-from-source)
+**[Download the Apple silicon Mac build](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases/tag/v0.9.0)** · [Release downloads](https://github.com/oh-ashen-one/rust-minecraft-invasion/releases) · [Source build](#build-from-source)
 
 This is an experimental single-player mode built on [2010 Rust Rewrite Mashup](https://github.com/chasmlol/2010-rust-rewrite-mashup), which builds on [IW4L](https://github.com/vladtrc/iw4L). It is a standalone native runtime that reads assets from a game installation you own. Call of Duty, Minecraft and other original game assets are **not bundled**.
+
+## Give it to your agent
+
+Share this repository and ask your agent to follow **[PLAY_WITH_AGENT.md](PLAY_WITH_AGENT.md)**.
+That guide includes a copy-and-paste setup prompt, supported-machine checks,
+release checksum verification, game-folder selection and preparation steps.
+The downloadable Mac app works without an agent or a development toolchain.
 
 ## Play on an Apple silicon Mac
 
@@ -49,6 +56,7 @@ Controllers use Apple’s GameController framework on macOS; Steam Input is not 
 No killstreak loadout selection is required. Minecraft mob kills unlock **all rewards at each threshold**, including rewards that share a cost. Earning a reward never deploys it. The original MW2 scripts retain the reward stack across death, display the earned notification, equip the appropriate killstreak item, and handle manual use through **D-pad Right / 4**. The consecutive mob-kill counter resets on death.
 
 The bottom-left stack uses the original reward icons from your MW2 installation. Repeated rewards show a count; the stock action-slot icon shows the next usable item. Rewards follow MW2's newest-first stack order.
+
 | Consecutive kills | Rewards |
 | --- | --- |
 | 3 | UAV |
@@ -62,9 +70,9 @@ The bottom-left stack uses the original reward icons from your MW2 installation.
 | 15 | EMP |
 | 25 | Tactical Nuke |
 
-The v0.9 source branch uses the original MW2 killstreak scripts, aircraft, weapons, effects and sounds from the player's own installation. Minecraft mobs are exposed to helicopter/Harrier/sentry targeting; native bullets and explosions damage their hitboxes. UAV pings appear on the original minimap. The custom block aircraft, radar panel, remote cameras and supply-crate behavior have been removed.
+This release uses the original MW2 killstreak scripts, aircraft, weapons, effects and sounds from the player's own installation. Minecraft mobs are exposed to helicopter/Harrier/sentry targeting; native bullets and explosions damage their hitboxes. UAV pings appear on the original minimap. The custom block aircraft, radar panel, remote cameras and supply-crate behavior have been removed.
 
-The original scripts control deployment restrictions, remote weapons, care-package collection, EMP and Counter-UAV behavior. The nuke follows the original countdown and match-ending sequence. This runtime is still experimental; the new integration requires live player validation. The linked v0.8 download predates this native-streak change.
+The original scripts control deployment restrictions, remote weapons, care-package collection, EMP and Counter-UAV behavior. The nuke follows the original countdown and match-ending sequence. This community runtime remains experimental; see the verification limits below.
 
 ## Build from source
 
@@ -73,7 +81,7 @@ The complete runtime, mob implementation, controller bridge, launcher and packag
 Install Rust (the repository pins the toolchain) and platform build dependencies from [BUILD.md](docs/BUILD.md). On macOS, install Xcode Command Line Tools. Then:
 
 ```sh
-git clone https://github.com/oh-ashen-one/rust-minecraft-invasion.git
+git clone --branch v0.9.0 https://github.com/oh-ashen-one/rust-minecraft-invasion.git
 cd rust-minecraft-invasion
 cargo build --locked --profile play -p launcher -j 4
 python3 invasion-launcher/package_macos.py
@@ -92,13 +100,15 @@ Upstream Windows/Linux build paths remain available in [BUILD.md](docs/BUILD.md)
 
 ## Verification and limitations
 
-See [VALIDATION.md](VALIDATION.md) for the release checks and their limits. This is an experimental public build. Compilation, focused simulation checks, actual Rust collision probes and fresh resource preparation passed. New killstreak visuals, live controller interactions, balance and rendered frame rate still need player feedback. No unattended match was started to claim a playtest.
+See [VALIDATION.md](VALIDATION.md) for the release checks and their limits. This is an experimental public build. Compilation, focused simulation checks, actual Rust collision probes and fresh resource preparation passed. The owner accepted this build for publication. That is distinct from automated verification: no exhaustive per-reward, cross-platform or FPS certification is claimed. No unattended match was started to claim a playtest.
 
 The broad inherited `make publish-check` is not clean; it reports pre-existing address-shaped literals and test placement across upstream components. The invasion update added none of those findings. Temporary development probes were removed before publication under the repository test policy.
 
 The launcher holds shared renderer locks, allows at most two renderer-bearing engines, and never closes another application or automatically restarts a crashed game. If launch fails, inspect `logs/latest-launch.log` under the runtime folder above. For setup failures, inspect `logs/prepare.log`. Please omit personal paths or account details when posting logs.
 
 ## Credits and license
+
+Full attribution: **[CREDITS.md](CREDITS.md)**.
 
 - **vladtrc and IW4L contributors** — standalone MW2 runtime.
 - **chasmlol** — 2010 Rust Rewrite Mashup, MinecraftOSS integration and the upstream crossover work.

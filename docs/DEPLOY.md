@@ -1,3 +1,26 @@
+# Rust Minecraft Invasion releases
+
+This fork publishes named GitHub releases with source tags and asset-free native
+Mac ZIPs. Owner-accepted releases such as v0.9.0 are regular releases, marked
+latest. Candidates without owner acceptance remain prereleases. Preserve earlier
+tags. The owner explicitly authorized v0.9.0 publication.
+
+Work on a release branch, publish the tag and archive/checksums, and point the
+repository default branch at that release branch so plain clones receive it.
+A main-branch merge requires separate explicit authorization.
+Use `invasion-launcher/package_macos.py`. The `--binary` and
+`--engine-source-commit` options support repackaging an unchanged, accepted game
+binary with updated documentation/notices. Verify its hash and unchanged engine
+source. The manifest records release source and engine source separately.
+Inspect the Git tree and archive for game data, private configuration and
+missing license files, and verify an anonymous download.
+
+The instructions below are upstream IW4L's separate deployment workflow. They
+are not required for installing or publishing this invasion release. Do not
+provision servers or run upstream deploy targets for a local installation.
+
+---
+
 # Shipping a release
 
 What `make deploy` does, what reaches the Windows folder with no human involved,
